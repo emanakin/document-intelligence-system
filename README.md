@@ -41,8 +41,6 @@ Before you begin, ensure you have the following installed on your system:
     pip install -r requirements.txt
     ```
 
-    _(If you don't have a `requirements.txt`, you'll need to create one based on the imports in your Python files, e.g., `fastapi`, `uvicorn`, `sqlalchemy`, `psycopg2-binary`, `python-jose[cryptography]`, `passlib[bcrypt]`, `python-multipart`, `alembic`, `python-dotenv`)_
-
 4.  **Configure Database:**
 
     - The application uses a PostgreSQL database. The connection URL is configured via the `DATABASE_URL` environment variable.
