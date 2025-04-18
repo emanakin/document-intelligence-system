@@ -1,9 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./analysis-dashboard.module.css";
+import { DocumentData, DocumentAnalysis } from "@/types";
 
-export default function AnalysisDashboard({ docId }: { docId: string }) {
-  // Mock analysis data
-  const analysis = {
+interface AnalysisDashboardProps {
+  docId: string;
+  documentData?: DocumentData;
+}
+
+export default function AnalysisDashboard({
+  docId,
+  documentData,
+}: AnalysisDashboardProps) {
+  // Use document analysis data if available, otherwise use mock data
+  const mockAnalysis: DocumentAnalysis = {
     invoiceNumber: "INV-2025-04-123",
     clientName: "ABC Corporation",
     invoiceDate: "2025-04-15",
@@ -17,6 +28,8 @@ export default function AnalysisDashboard({ docId }: { docId: string }) {
     insights:
       "The total amount is slightly above the average for this client over the last 6 months. The payment terms are standard (Net 30). No unusual line items detected compared to previous invoices.",
   };
+
+  const analysis = documentData?.analysis || mockAnalysis;
 
   return (
     <div className={styles.analysisContainer}>
@@ -56,15 +69,17 @@ export default function AnalysisDashboard({ docId }: { docId: string }) {
             <span>{analysis.classification}</span>
           </div>
 
-          <div className={styles.fraudCheck}>
-            <h3>Fraud Check:</h3>
-            <span className={styles.fraudAlert}>
-              {analysis.fraudCheck.status}
-            </span>
-            <p className={styles.fraudDetails}>
-              ({analysis.fraudCheck.details})
-            </p>
-          </div>
+          {analysis.fraudCheck && (
+            <div className={styles.fraudCheck}>
+              <h3>Fraud Check:</h3>
+              <span className={styles.fraudAlert}>
+                {analysis.fraudCheck.status}
+              </span>
+              <p className={styles.fraudDetails}>
+                ({analysis.fraudCheck.details})
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

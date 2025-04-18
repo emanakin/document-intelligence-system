@@ -1,0 +1,71 @@
+# --- General ---
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+
+# --- IDEs ---
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+nbproject/
+.project
+.settings/
+
+# --- Python / Backend ---
+backend/venv/
+backend/env/
+backend/__pycache__/
+backend/app/__pycache__/
+backend/migrations/__pycache__/
+backend/migrations/versions/__pycache__/
+backend/*.pyc
+backend/app/*.pyc
+backend/migrations/*.pyc
+backend/migrations/versions/*.pyc
+backend/.env*
+backend/app/.env*
+!backend/.env.example # Keep example env files if you have them
+backend/dist/
+backend/build/
+backend/*.egg-info/
+backend/.pytest_cache/
+backend/.coverage*
+backend/htmlcov/
+backend/uploads/ # Ignore uploaded files directory
+
+# --- Node.js / Frontend ---
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/coverage/
+
+# --- OS Specific ---
+# Windows thumbnail cache files
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+
+# Linux trash files
+.Trash-*
+
+# macOS specific files
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
