@@ -1,0 +1,102 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #131829;
+}
+
+.integrationCard {
+  background-color: #1e2233;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  color: #ffffff;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #8288a0;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.highlight {
+  color: #c2c6d2;
+  font-style: italic;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 0.85rem;
+  color: #c2c6d2;
+  margin-bottom: 0.5rem;
+}
+
+.select,
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #1a1f32;
+  border: 1px solid #2a304a;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238288a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.sendButton {
+  background-color: #f05c7f;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  width: 100%;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.sendButton:hover {
+  background-color: #e04c6f;
+}
+
+.backLink {
+  display: block;
+  text-align: center;
+  color: #c2c6d2;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: #f05c7f;
+}

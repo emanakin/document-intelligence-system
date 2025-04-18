@@ -1,0 +1,82 @@
+.uploadContainer {
+  width: 100%;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1f32;
+  border: 2px dashed #2a304a;
+  border-radius: 8px;
+  padding: 3rem 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  height: 200px;
+}
+
+.dragging {
+  border-color: #f05c7f;
+  background-color: rgba(240, 92, 127, 0.05);
+}
+
+.cloudIcon {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.dropText {
+  color: #ffffff;
+  font-size: 0.95rem;
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.dropText span {
+  color: #c2c6d2;
+  font-size: 0.9rem;
+}
+
+.supportedFormats {
+  color: #8288a0;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.fileInput {
+  display: none;
+}
+
+.urlInput {
+  margin-top: 1.25rem;
+  width: 100%;
+}
+
+.urlInput span {
+  display: block;
+  text-align: center;
+  color: #8288a0;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.urlInputGroup {
+  width: 100%;
+}
+
+.urlField {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #1a1f32;
+  border: 1px solid #2a304a;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.urlField::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}

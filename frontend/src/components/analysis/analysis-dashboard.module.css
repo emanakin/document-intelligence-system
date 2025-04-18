@@ -1,0 +1,120 @@
+.analysisContainer {
+  width: 380px;
+  background-color: #1e2233;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.analysisSection {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+.dataGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.dataItem {
+  margin-bottom: 0.5rem;
+}
+
+.dataItem h3 {
+  font-size: 0.85rem;
+  color: #8288a0;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.dataItem p {
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.classificationsContainer {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.classification,
+.fraudCheck {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.classification h3,
+.fraudCheck h3 {
+  font-size: 0.85rem;
+  color: #8288a0;
+  font-weight: 500;
+  margin: 0;
+}
+
+.classification span {
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.fraudAlert {
+  color: #f05c7f;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.fraudDetails {
+  font-size: 0.8rem;
+  color: #8288a0;
+  margin-left: 0.25rem;
+  font-style: italic;
+}
+
+.insightsSection {
+  padding: 1.5rem;
+}
+
+.insightsText {
+  font-size: 0.9rem;
+  color: #c2c6d2;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.dataVisualization {
+  background-color: #1a1f32;
+  border-radius: 4px;
+  padding: 2rem;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #8288a0;
+  text-align: center;
+}
+
+.integrateButton {
+  display: inline-block;
+  background-color: #f05c7f;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.integrateButton:hover {
+  background-color: #e04c6f;
+}

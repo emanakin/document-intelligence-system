@@ -1,0 +1,90 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #131829;
+}
+
+.loginCard {
+  background-color: rgba(30, 34, 51, 0.8);
+  border-radius: 8px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.title {
+  color: #f05c7f;
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #c2c6d2;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputGroup label {
+  color: #c2c6d2;
+  font-size: 0.9rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  background-color: rgba(30, 34, 51, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 0.9rem;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.loginButton {
+  background-color: #f05c7f;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.loginButton:hover {
+  background-color: #e04c6f;
+}
+
+.forgotPassword {
+  color: #c2c6d2;
+  text-align: center;
+  font-size: 0.8rem;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
+}
