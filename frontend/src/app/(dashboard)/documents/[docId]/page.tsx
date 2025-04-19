@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import styles from "./document-viewer.module.css";
 import AnalysisDashboard from "@/components/analysis/analysis-dashboard";
 import authService from "@/services/auth";
-import { useRouter } from "next/navigation";
 import { DocumentData, DocumentApiResponse } from "@/types";
 
 // Document API service
@@ -28,13 +28,9 @@ const documentApi = {
   },
 };
 
-export default function DocumentPage({
-  params,
-}: {
-  params: { docId: string };
-}) {
-  const unwrappedParams = params as { docId: string };
-  const docId = unwrappedParams.docId;
+export default function DocumentPage() {
+  const params = useParams();
+  const docId = params.docId as string;
 
   const [document, setDocument] = useState<DocumentData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +74,11 @@ export default function DocumentPage({
       }
     };
 
-    loadDocument();
+    // Ensure docId is available before attempting to load
+    if (docId) {
+      loadDocument();
+    }
+    // docId from useParams is stable unless the route changes
   }, [docId, router]);
 
   const handlePreviousPage = () => {

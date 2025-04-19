@@ -1,13 +1,22 @@
+"use client";
+
+import { useEffect } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import styles from "./integration.module.css";
 
-export default function IntegrationPage({
-  params,
-}: {
-  params: { docId: string };
-}) {
+export default function IntegrationPage() {
+  const params = useParams();
+  const docId = params.docId as string;
+
   // Mock document data based on docId
   const documentName = "Invoice_Client_ABC_April.pdf";
+
+  useEffect(() => {
+    if (docId) {
+      console.log("Integration Doc ID:", docId);
+    }
+  }, [docId]);
 
   return (
     <div className={styles.container}>
@@ -76,7 +85,7 @@ export default function IntegrationPage({
 
         <button className={styles.sendButton}>Simulate Data Send</button>
 
-        <Link href={`/documents/${params.docId}`} className={styles.backLink}>
+        <Link href={`/documents/${docId}`} className={styles.backLink}>
           ← Back to Document Detail
         </Link>
       </div>
