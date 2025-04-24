@@ -5,9 +5,12 @@ from sqlalchemy.orm import Session
 
 from db.database import get_db
 from models.user import User
-from services.auth_service import SECRET_KEY, ALGORITHM
+from config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+SECRET_KEY = settings.JWT_SECRET_KEY
+ALGORITHM = settings.JWT_ALGORITHM
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(

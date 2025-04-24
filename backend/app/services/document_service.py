@@ -1,40 +1,107 @@
 import os
 import random
+import uuid
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
+from botocore.exceptions import ClientError
+from fastapi import HTTPException
+from fastapi import status
 
 from models.document import Document
 from models.schemas.document import DocumentCreate, AnalysisResponse, InsightResponse
+from core.aws import s3_client, S3_BUCKET_NAME, generate_presigned_url, upload_to_s3
+from config import settings
+from core.logging import setup_logger
 
-# Simulated storage directory
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# Create logger
+doc_logger = setup_logger("document_service")
 
 async def create_document(db: Session, document: DocumentCreate, file: UploadFile = None):
+    doc_logger.info(f"Creating document: filename={document.filename if document else 'None'}, user_id={document.user_id}")
+    
     # Handle file upload if provided
-    file_path = None
+    s3_key = None
+    content_type = None
+    file_size = 0
+    
     if file:
-        file_path = os.path.join(UPLOAD_DIR, file.filename)
-        with open(file_path, "wb") as buffer:
+        try:
+            # Read file content
+            doc_logger.debug(f"Reading file content: {file.filename}, content_type={file.content_type}")
             content = await file.read()
-            buffer.write(content)
-    
-    # Create database record
-    db_document = Document(
-        filename=document.filename,
-        url=document.url,
-        file_path=file_path,
-        description=document.description,
-        user_id=document.user_id
-    )
-    
-    db.add(db_document)
-    db.commit()
-    db.refresh(db_document)
-    return db_document
+            file_size = len(content)
+            content_type = file.content_type
+            
+            # Generate unique S3 key using user_id and UUID
+            file_extension = os.path.splitext(file.filename)[1] if file.filename else ""
+            random_id = uuid.uuid4().hex
+            s3_key = f"user-files/{document.user_id}/{random_id}{file_extension}"
+            
+            doc_logger.info(f"Generated S3 key: {s3_key}")
+            
+            # Upload to S3 using our new function
+            upload_successful = upload_to_s3(content, s3_key, content_type)
+            
+            if not upload_successful:
+                doc_logger.error("S3 upload failed")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to upload file to storage"
+                )
+            
+            # Create database record ONLY if S3 upload succeeds
+            doc_logger.debug("Creating database record")
+            db_document = Document(
+                filename=document.filename,
+                s3_key=s3_key,
+                content_type=content_type,
+                file_size=file_size,
+                page_count=1,  # Default value
+                status="uploaded",
+                user_id=document.user_id
+            )
+            
+            db.add(db_document)
+            db.commit()
+            db.refresh(db_document)
+            doc_logger.info(f"Document created successfully: id={db_document.id}")
+            return db_document
+            
+        except HTTPException as he:
+            # Re-raise HTTP exceptions
+            doc_logger.error(f"HTTP exception: {str(he)}")
+            raise
+        except Exception as e:
+            # Catch and report all other exceptions
+            doc_logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+            # Re-raise the exception with a clear message
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to process document: {str(e)}"
+            )
+    else:
+        # Handle URL-only documents if that's a use case
+        doc_logger.error("No file provided")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File upload is required"
+        )
 
 def get_document(db: Session, document_id: int):
-    return db.query(Document).filter(Document.id == document_id).first()
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if doc and doc.file_path:  # If document has an S3 key
+        try:
+            # Pass original filename to preserve the extension during download
+            presigned_url = generate_presigned_url(
+                doc.file_path, 
+                original_filename=doc.filename
+            )
+            if presigned_url:
+                doc.file_url = presigned_url
+        except Exception as e:
+            print(f"Error handling document: {str(e)}")
+            
+    return doc
 
 def get_all_documents(db: Session, user_id: int):
     return db.query(Document).filter(Document.user_id == user_id).all()

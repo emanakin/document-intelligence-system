@@ -83,11 +83,12 @@
 .documentViewer {
   flex: 1;
   overflow: auto;
-  padding: 2rem;
+  padding: 1rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background-color: #0d111d;
+  max-height: calc(100vh - 120px);
 }
 
 .documentPlaceholder {
@@ -164,4 +165,6 @@
   justify-content: center;
   transition: transform 0.2s ease;
   transform-origin: center center;
+  overflow: hidden;
+  max-height: calc(100vh - 150px);
 }

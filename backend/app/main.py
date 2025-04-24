@@ -1,3 +1,5 @@
+from config import settings
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,7 +26,6 @@ app.include_router(users.router)
 
 @app.on_event("startup")
 async def startup():
-    # Create database tables on startup
     create_tables()
 
 @app.get("/")

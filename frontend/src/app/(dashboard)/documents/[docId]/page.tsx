@@ -7,6 +7,7 @@ import styles from "./document-viewer.module.css";
 import AnalysisDashboard from "@/components/analysis/analysis-dashboard";
 import authService from "@/services/auth";
 import { DocumentData, DocumentApiResponse } from "@/types";
+import PDFViewer from "@/components/document-viewer/pdf-viewer";
 
 // Document API service
 const documentApi = {
@@ -36,6 +37,8 @@ export default function DocumentPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [scale, setScale] = useState(1.0);
+  const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
 
   useEffect(() => {
@@ -78,27 +81,65 @@ export default function DocumentPage() {
     if (docId) {
       loadDocument();
     }
-    // docId from useParams is stable unless the route changes
   }, [docId, router]);
 
+  useEffect(() => {
+    if (document) {
+      console.log("Document state updated:", document);
+      console.log("File URL:", document.file_url);
+
+      if (document.file_url) {
+        console.log("Attempting to fetch PDF from:", document.file_url);
+
+        // Explicitly try to fetch the file to verify the endpoint
+        fetch(document.file_url)
+          .then((response) => {
+            console.log(
+              "PDF fetch response:",
+              response.status,
+              response.statusText
+            );
+            if (!response.ok) throw new Error(`Status: ${response.status}`);
+            return response.blob();
+          })
+          .then((blob) => {
+            console.log("PDF fetched successfully, size:", blob.size, "bytes");
+          })
+          .catch((error) => {
+            console.error("PDF fetch failed:", error);
+          });
+      }
+    }
+  }, [document]);
+
   const handlePreviousPage = () => {
-    if (document && currentPage > 1) {
+    if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
   const handleNextPage = () => {
-    if (document && currentPage < document.pageCount) {
+    if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
   };
 
   const handleZoomIn = () => {
-    // Implement zoom in functionality
+    setScale((prevScale) => Math.min(prevScale + 0.2, 3.0));
   };
 
   const handleZoomOut = () => {
-    // Implement zoom out functionality
+    setScale((prevScale) => Math.max(prevScale - 0.2, 0.5));
+  };
+
+  const handleDocumentLoad = (numPages: number) => {
+    setTotalPages(numPages);
+    if (document) {
+      setDocument({
+        ...document,
+        pageCount: numPages,
+      });
+    }
   };
 
   if (loading) {
@@ -168,11 +209,22 @@ export default function DocumentPage() {
 
           <div className={styles.documentViewer}>
             {document.file_url ? (
-              <iframe
-                src={document.file_url}
-                className={styles.documentFrame}
-                title={document.filename}
-              />
+              document.file_type?.toLowerCase() === "pdf" ? (
+                <div className={styles.pdfContainer}>
+                  <PDFViewer
+                    fileUrl={document.file_url}
+                    currentPage={currentPage}
+                    scale={scale}
+                    onDocumentLoad={handleDocumentLoad}
+                  />
+                </div>
+              ) : (
+                <iframe
+                  src={document.file_url}
+                  className={styles.documentFrame}
+                  title={document.filename}
+                />
+              )
             ) : (
               <div className={styles.documentPlaceholder}>
                 <div className={styles.highlightedArea}></div>

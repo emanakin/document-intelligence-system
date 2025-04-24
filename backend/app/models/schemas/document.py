@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -13,6 +13,13 @@ class DocumentCreate(DocumentBase):
 class DocumentResponse(DocumentBase):
     id: int
     created_at: datetime
+    file_path: Optional[str] = None
+    file_url: Optional[str] = None
+    file_type: Optional[str] = "PDF"
+    file_size: Optional[int] = 0
+    page_count: Optional[int] = 1
+    status: Optional[str] = "Processed"
+    analysis: Optional[Dict[str, Any]] = {}
     
     class Config:
         from_attributes = True

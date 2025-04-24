@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 
 from models.user import User
 from models.schemas.auth import UserCreate
+from config import settings
 
-# Configuration
-SECRET_KEY = "YOUR_SECRET_KEY"  # Replace with secure key
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = settings.JWT_SECRET_KEY
+ALGORITHM = settings.JWT_ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -29,7 +29,14 @@ export default function AnalysisDashboard({
       "The total amount is slightly above the average for this client over the last 6 months. The payment terms are standard (Net 30). No unusual line items detected compared to previous invoices.",
   };
 
-  const analysis = documentData?.analysis || mockAnalysis;
+  const analysis = documentData?.analysis
+    ? {
+        ...mockAnalysis,
+        ...documentData.analysis,
+      }
+    : mockAnalysis;
+
+  console.log("Analysis dashboard using data:", analysis);
 
   return (
     <div className={styles.analysisContainer}>
