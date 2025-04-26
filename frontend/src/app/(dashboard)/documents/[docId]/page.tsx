@@ -8,26 +8,7 @@ import AnalysisDashboard from "@/components/analysis/analysis-dashboard";
 import authService from "@/services/auth";
 import { DocumentData, DocumentApiResponse } from "@/types";
 import PDFViewer from "@/components/document-viewer/pdf-viewer";
-
-// Document API service
-const documentApi = {
-  getDocument: async (docId: string) => {
-    const token = authService.getToken();
-    if (!token) throw new Error("Authentication required");
-
-    const response = await fetch(
-      `${authService.getApiBaseUrl()}/documents/${docId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!response.ok) throw new Error("Failed to fetch document");
-    return await response.json();
-  },
-};
+import documentsApi from "@/services/api/documents";
 
 export default function DocumentPage() {
   const params = useParams();
@@ -51,8 +32,8 @@ export default function DocumentPage() {
 
       try {
         setLoading(true);
-        // Fetch the document data
-        const docData: DocumentApiResponse = await documentApi.getDocument(
+        // Fetch the document data using the imported service
+        const docData: DocumentApiResponse = await documentsApi.getDocument(
           docId
         );
 

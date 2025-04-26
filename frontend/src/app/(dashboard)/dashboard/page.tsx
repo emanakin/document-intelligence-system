@@ -6,49 +6,7 @@ import styles from "./dashboard.module.css";
 import DocumentUpload from "@/components/document-upload/upload-area";
 import { useRouter } from "next/navigation";
 import authService from "@/services/auth";
-
-// API service with proper routes based on the backend
-const documentsApi = {
-  getDocuments: async () => {
-    const token = authService.getToken();
-    if (!token) throw new Error("Authentication required");
-
-    const response = await fetch(`${authService.getApiBaseUrl()}/documents`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch documents");
-    return await response.json();
-  },
-
-  uploadDocument: async (file: File, description?: string) => {
-    const token = authService.getToken();
-    if (!token) throw new Error("Authentication required");
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    if (description) {
-      formData.append("description", description);
-    }
-
-    const response = await fetch(
-      `${authService.getApiBaseUrl()}/documents/upload`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }
-    );
-
-    if (!response.ok) throw new Error("Failed to upload document");
-    return await response.json();
-  },
-};
+import documentsApi from "@/services/api/documents";
 
 interface Document {
   id: string;

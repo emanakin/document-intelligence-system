@@ -1,9 +1,7 @@
-from config import settings
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import auth, documents, insights, integration, users
+from api import auth, documents, integration, users, ws
 from db.database import create_tables
 
 app = FastAPI(title="Document Analysis API")
@@ -20,9 +18,9 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router)
 app.include_router(documents.router)
-app.include_router(insights.router)
 app.include_router(integration.router)
 app.include_router(users.router)
+app.include_router(ws.router)
 
 @app.on_event("startup")
 async def startup():

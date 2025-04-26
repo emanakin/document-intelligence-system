@@ -31,7 +31,6 @@ export default function AnalysisDashboard({
 
   const analysis = documentData?.analysis
     ? {
-        ...mockAnalysis,
         ...documentData.analysis,
       }
     : mockAnalysis;
