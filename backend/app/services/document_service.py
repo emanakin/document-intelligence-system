@@ -32,23 +32,40 @@ async def create_document(db: Session, document: DocumentCreate, file: UploadFil
         if not upload_to_s3(content, s3_key, content_type):
             raise HTTPException(status_code=500, detail="S3 upload failed")
 
-        analysis = await analyze_document(content, content_type, ext)
-
         db_doc = Document(
             filename=document.filename,
             s3_key=s3_key,
             content_type=content_type,
             file_size=file_size,
             page_count=1,
-            status="processed",
+            status="processing",
             user_id=document.user_id,
-            analysis=analysis
+            analysis={},
         )
         db.add(db_doc)
+        db.flush()
+
+        async def progress(percent: int, message: str) -> None:
+            await manager.broadcast(str(db_doc.id), {"percent": percent, "message": message})
+
+        analysis = await analyze_document(
+            content,
+            content_type,
+            ext,
+            progress_cb=progress,
+            step_delay=1.0,
+        )
+
+        db_doc.analysis = analysis
+        db_doc.status = "processed"
         db.commit()
         db.refresh(db_doc)
-        doc_logger.info(f"document:created id={db_doc.id}")
-        asyncio.create_task(_run_analysis_and_update(db_doc, content, content_type, ext, db))
+
+        await manager.broadcast(
+            str(db_doc.id),
+            {"percent": 100, "message": "complete", "analysis": analysis},
+        )
+
         return db_doc
 
     except HTTPException:
@@ -75,13 +92,3 @@ def get_document(db: Session, document_id: int):
 
 def get_all_documents(db: Session, user_id: int):
     return db.query(Document).filter(Document.user_id == user_id).all()
-
-async def _run_analysis_and_update(doc, content, ctype, ext, db):
-    async def progress(percent, message):
-        await manager.broadcast(str(doc.id), {"percent": percent, "message": message})
-
-    analysis = await analyze_document(content, ctype, ext, progress_cb=progress)
-    # persist final result
-    db.query(Document).filter(Document.id == doc.id).update({"analysis": analysis})
-    db.commit()
-    await manager.broadcast(str(doc.id), {"percent": 100, "message": "complete", "analysis": analysis})

@@ -3,16 +3,13 @@ from botocore.exceptions import ClientError
 from .logging import setup_logger
 from config import settings
 
-# Create logger
 aws_logger = setup_logger("aws")
 
-# Get values from settings
 S3_BUCKET_NAME = settings.S3_BUCKET_NAME
 AWS_ACCESS_KEY_ID = settings.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = settings.AWS_SECRET_ACCESS_KEY
 AWS_REGION = settings.AWS_REGION
 
-# Initialize S3 client using settings
 try:
     s3_client = boto3.client(
         's3',

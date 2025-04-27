@@ -1,47 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./login-form.module.css";
-import authService from "@/services/auth";
 import Link from "next/link";
+import styles from "@/styles/pages/auth.module.css";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPass] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const router = useRouter();
+  const { login, user } = useAuth();
 
-  // Check if already authenticated
+  /* redirect if already logged-in */
   useEffect(() => {
-    if (authService.isAuthenticated()) {
-      router.push("/dashboard");
-    }
-  }, [router]);
+    if (user) router.replace("/dashboard");
+  }, [user, router]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-
-    // Basic validation
     if (!email || !password) {
       setError("Please enter both email and password");
       return;
     }
 
-    setLoading(true);
-    setError("");
-
     try {
-      console.log("Starting login process...");
-      await authService.login(email, password);
-      console.log("Login successful, redirecting...");
-
-      // Force redirect
-      window.location.href = "/dashboard";
+      setLoading(true);
+      await login(email, password);
     } catch (err) {
-      setError("Invalid credentials. Please try again.");
-      console.error("Login error:", err);
+      setError("Invalid credentials. Please try again. " + err);
     } finally {
       setLoading(false);
     }
@@ -59,8 +49,8 @@ export default function LoginPage() {
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email Address</label>
             <input
-              type="email"
               id="email"
+              type="email"
               placeholder="you@example.com"
               className={styles.input}
               value={email}
@@ -72,12 +62,12 @@ export default function LoginPage() {
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
             <input
-              type="password"
               id="password"
+              type="password"
               placeholder="••••••••"
               className={styles.input}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setPass(e.target.value)}
               required
             />
           </div>
@@ -87,12 +77,12 @@ export default function LoginPage() {
             className={styles.loginButton}
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Logging in…" : "Login"}
           </button>
+
           <Link href="/signup" className={styles.forgotPassword}>
             Don&apos;t have an account? Sign up
           </Link>
-
           <a href="#" className={styles.forgotPassword}>
             Forgot Password?
           </a>

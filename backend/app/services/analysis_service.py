@@ -2,21 +2,23 @@ from datetime import datetime, timedelta
 from typing import Dict, Any
 import random, traceback
 from core.logging import setup_logger
+import asyncio
 
 analysis_logger = setup_logger("analysis_service")
 
-# --------------------------------------------------------------------------- #
-#  PUBLIC ENTRY
-# --------------------------------------------------------------------------- #
 async def analyze_document(
         content: bytes,
         content_type: str,
         file_ext: str,
-        progress_cb=None
+        progress_cb=None,
+        step_delay: float = 0.0
 ) -> Dict[str, Any]:
-    async def step(pct, msg):
+    async def step(pct: int, msg: str) -> None:
+        analysis_logger.info(f"Analysis progress: {pct}% - {msg}")
         if progress_cb:
             await progress_cb(pct, msg)
+        if step_delay:
+            await asyncio.sleep(step_delay)
 
     await step(10, "classifying")
     doc_type = _determine_type(file_ext, content_type)
@@ -34,12 +36,13 @@ async def analyze_document(
     result["fraudCheck"] = _fraud_check(doc_type)
     result["classification"] = doc_type
 
-    await step(100, "done")
+    await step(95, "Finalizing results")
+    if step_delay:
+        await asyncio.sleep(step_delay)
+
+    await step(100, "Analysis complete")
     return result
 
-# --------------------------------------------------------------------------- #
-#  HELPERS
-# --------------------------------------------------------------------------- #
 def _determine_type(ext: str, ctype: str) -> str:
     return random.choice(["invoice", "receipt", "contract", "report"])
 
@@ -49,7 +52,6 @@ def _contract() -> Dict[str, Any]:   return _make_contract()
 def _report()   -> Dict[str, Any]:   return _make_report()
 def _generic()  -> Dict[str, Any]:   return _make_generic()
 
-# ---- concrete extractors --------------------------------------------------- #
 def _make_financial(prefix: str) -> Dict[str, Any]:
     today   = datetime.now()
     due     = today + timedelta(days=30)

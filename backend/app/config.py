@@ -3,7 +3,6 @@ from functools import lru_cache
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
-# Load environment variables from .env file with override
 load_dotenv(override=True)
 
 class Settings(BaseSettings):

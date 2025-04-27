@@ -1,51 +1,52 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./upload-area.module.css";
 
 interface UploadAreaProps {
-  onFileUpload: (file: File) => Promise<void>;
+  onFileUpload?: (file: File) => Promise<void>;
   onFileSelect?: (file: File) => void;
+  uploadSuccess?: boolean;
 }
 
-export default function DocumentUpload({ onFileSelect }: UploadAreaProps) {
+export default function DocumentUpload({
+  onFileSelect,
+  uploadSuccess,
+}: UploadAreaProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /* reset after a successful upload */
+  useEffect(() => {
+    if (uploadSuccess) {
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, [uploadSuccess]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
 
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
+  const handleDragLeave = () => setIsDragging(false);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      handleFileSelection(files[0]);
-    }
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileSelection(file);
   };
 
-  const handleBrowseClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handleBrowseClick = () => fileInputRef.current?.click();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      handleFileSelection(files[0]);
-    }
+    const file = e.target.files?.[0];
+    if (file) handleFileSelection(file);
   };
 
   const handleFileSelection = (file: File) => {
     setSelectedFile(file);
-    if (onFileSelect) {
-      onFileSelect(file);
-    }
+    onFileSelect?.(file);
   };
 
   return (
@@ -60,6 +61,7 @@ export default function DocumentUpload({ onFileSelect }: UploadAreaProps) {
         onClick={handleBrowseClick}
       >
         <div className={styles.cloudIcon}>☁️</div>
+
         {selectedFile ? (
           <p className={styles.dropText}>
             Selected:{" "}
@@ -74,15 +76,16 @@ export default function DocumentUpload({ onFileSelect }: UploadAreaProps) {
             <span>or click to browse</span>
           </p>
         )}
+
         <p className={styles.supportedFormats}>
           (Images, PDFs, Text Files supported)
         </p>
+
         <input
-          type="file"
           ref={fileInputRef}
+          type="file"
           className={styles.fileInput}
           onChange={handleFileSelect}
-          multiple={false}
           accept=".pdf,.jpg,.jpeg,.png,.txt"
         />
       </div>

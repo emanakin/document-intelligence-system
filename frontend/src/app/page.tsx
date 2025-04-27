@@ -2,21 +2,18 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import authService from "@/services/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HomePage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
 
+  /* decide where to send the visitor */
   useEffect(() => {
-    // Check if user is already authenticated
-    if (authService.isAuthenticated()) {
-      router.push("/dashboard");
-    } else {
-      router.push("/login");
-    }
-  }, [router]);
+    if (loading) return;
+    router.replace(user ? "/dashboard" : "/login");
+  }, [user, loading, router]);
 
-  // Show a basic loading state while redirecting
   return (
     <div
       style={{
@@ -26,7 +23,7 @@ export default function HomePage() {
         height: "100vh",
       }}
     >
-      <p>Loading...</p>
+      <p>Loading…</p>
     </div>
   );
 }

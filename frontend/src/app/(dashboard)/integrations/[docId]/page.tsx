@@ -3,13 +3,12 @@
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import styles from "./integration.module.css";
+import styles from "@/styles/pages/integration.module.css";
 
 export default function IntegrationPage() {
   const params = useParams();
   const docId = params.docId as string;
 
-  // Mock document data based on docId
   const documentName = "Invoice_Client_ABC_April.pdf";
 
   useEffect(() => {

@@ -1,151 +1,69 @@
-interface User {
+import { apiFetch } from "@/lib/api";
+import Cookies from "js-cookie";
+
+export interface User {
   id: string;
-  username?: string;
   email: string;
+  username?: string;
   full_name?: string;
 }
 
-const getApiBaseUrl = () => {
-  // Check if we're in production or development
-  if (process.env.NODE_ENV === "production") {
-    return process.env.NEXT_PUBLIC_API_URL || "";
-  }
-
-  return "http://localhost:8000";
-};
-
-const TOKEN_KEY = "auth_token";
-const USER_KEY = "auth_user";
+const TOKEN_COOKIE = "di_jwt";
+const COOKIE_OPTS = { sameSite: "lax" as const, path: "/", expires: 7 }; // 7 days
 
 const authService = {
-  // Login user and store token
-  login: async (email: string, password: string): Promise<void> => {
-    try {
-      // Create form data for token endpoint (following OAuth2 password flow)
-      const formData = new URLSearchParams();
-      formData.append("username", email); // Backend uses email as username
-      formData.append("password", password);
-
-      const response = await fetch(`${getApiBaseUrl()}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-
-      const data = await response.json();
-      // Store the access token
-      localStorage.setItem(TOKEN_KEY, data.access_token);
-
-      // Fetch user profile with the token
-      await authService.fetchUserProfile();
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
-    }
+  /* ---------- low-level helpers ---------- */
+  setToken(token: string) {
+    Cookies.set(TOKEN_COOKIE, token, COOKIE_OPTS);
+  },
+  getToken() {
+    return Cookies.get(TOKEN_COOKIE);
+  },
+  clearToken() {
+    Cookies.remove(TOKEN_COOKIE, { path: "/" });
   },
 
-  // Register new user
-  signup: async (
-    email: string,
-    password: string,
-    fullName: string
-  ): Promise<void> => {
-    try {
-      const response = await fetch(`${getApiBaseUrl()}/auth/signup`, {
+  /* ---------- HIGH-LEVEL API ------------- */
+  /** POST /auth/login  (x-www-form-urlencoded) */
+  login: async (email: string, password: string) => {
+    const { access_token } = await apiFetch<{ access_token: string }>(
+      "/auth/login",
+      {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          username: email, // FastAPI's OAuth2PasswordRequestForm «username»
           password,
-          full_name: fullName,
         }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Signup failed");
       }
-
-      // After successful signup, log the user in
-      await authService.login(email, password);
-    } catch (error) {
-      console.error("Signup error:", error);
-      throw error;
-    }
+    );
+    authService.setToken(access_token);
+    return authService.fetchUserProfile(); // <- returns User
   },
 
-  // Fetch user profile using stored token
+  /** POST /auth/signup  (json) */
+  signup: async (email: string, password: string, fullName: string) => {
+    await apiFetch("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        email,
+        password,
+        full_name: fullName,
+      }),
+    });
+    /* FastAPI returns 201 with the User object, but we need a token;
+       easiest: immediately log-in.                           */
+    return authService.login(email, password);
+  },
+
+  /** GET /auth/users/me   (Bearer) */
   fetchUserProfile: async (): Promise<User> => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
-      throw new Error("Not authenticated");
-    }
-
-    try {
-      const response = await fetch(`${getApiBaseUrl()}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch user profile");
-      }
-
-      const userData = await response.json();
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      return userData;
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      throw error;
-    }
+    const token = authService.getToken();
+    if (!token) throw new Error("Unauthenticated");
+    return apiFetch<User>("/auth/users/me", {}, token);
   },
 
-  // Logout user
-  logout: (): void => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-  },
-
-  // Check if user is authenticated
-  isAuthenticated: (): boolean => {
-    return localStorage.getItem(TOKEN_KEY) !== null;
-  },
-
-  // Get current user from local storage
-  getCurrentUser: (): User | null => {
-    const userJson = localStorage.getItem(USER_KEY);
-    if (!userJson) return null;
-
-    try {
-      return JSON.parse(userJson) as User;
-    } catch (error) {
-      console.error("Error parsing user data:", error);
-      return null;
-    }
-  },
-
-  // Get auth token
-  getToken: (): string | null => {
-    return localStorage.getItem(TOKEN_KEY);
-  },
-
-  // Get API base URL
-  getApiBaseUrl: () => {
-    // Check if we're in production or development
-    if (process.env.NODE_ENV === "production") {
-      return process.env.NEXT_PUBLIC_API_URL || "";
-    }
-    return "http://localhost:8000";
-  },
+  logout: () => authService.clearToken(),
 };
 
 export default authService;
