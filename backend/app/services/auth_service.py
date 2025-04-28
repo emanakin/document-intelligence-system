@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
 from models.user import User
 from models.schemas.auth import UserCreate
@@ -35,13 +36,30 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 def create_user(db: Session, user: UserCreate):
+    # Check if user with this email already exists
+    existing_user = db.query(User).filter(User.email == user.email).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail=f"User with email {user.email} already exists"
+        )
+        
     hashed_password = get_password_hash(user.password)
     db_user = User(
         email=user.email,
         full_name=user.full_name,
         hashed_password=hashed_password
     )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user 
+    
+    try:
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except Exception as e:
+        db.rollback()
+        # Convert SQLAlchemy errors to something more user-friendly
+        raise HTTPException(
+            status_code=400,
+            detail=f"Database error: {str(e)}"
+        ) 

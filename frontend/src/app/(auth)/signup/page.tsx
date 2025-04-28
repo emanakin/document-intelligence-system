@@ -24,6 +24,7 @@ export default function SignupPage() {
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
+    setError("");
 
     if (!email || !password || !fullName) {
       setError("Please fill all required fields");
@@ -34,12 +35,19 @@ export default function SignupPage() {
       return;
     }
 
+    setLoading(true);
+
     try {
-      setLoading(true);
       await signup(email, password, fullName);
       router.replace("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      console.error("Signup error:", err);
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -51,7 +59,11 @@ export default function SignupPage() {
         <h1 className={styles.title}>DocIntel</h1>
         <p className={styles.subtitle}>Create your account</p>
 
-        {error && <div className={styles.errorMessage}>{error}</div>}
+        {error && (
+          <div className={styles.errorContainer} role="alert">
+            {error}
+          </div>
+        )}
 
         <form className={styles.form} onSubmit={handleSignup}>
           {/* email */}

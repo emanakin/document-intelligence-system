@@ -44,17 +44,26 @@ const authService = {
 
   /** POST /auth/signup  (json) */
   signup: async (email: string, password: string, fullName: string) => {
-    await apiFetch("/auth/signup", {
-      method: "POST",
-      body: JSON.stringify({
-        email,
-        password,
-        full_name: fullName,
-      }),
-    });
-    /* FastAPI returns 201 with the User object, but we need a token;
-       easiest: immediately log-in.                           */
-    return authService.login(email, password);
+    try {
+      await apiFetch("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password,
+          full_name: fullName,
+        }),
+      });
+
+      // If signup succeeds, attempt login
+      return authService.login(email, password);
+    } catch (error) {
+      // Properly propagate the error up to the component
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Failed to create account. Please try again.");
+      }
+    }
   },
 
   /** GET /auth/users/me   (Bearer) */
