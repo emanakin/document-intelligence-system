@@ -9,12 +9,12 @@ def integrate_with_external_system(db: Session, document_id: int, user_id: int):
     if not document or document.user_id != user_id:
         return None
     
-    # Mock external system integration
+    # mock
     systems = ["ERP", "CRM", "Accounting Software", "Document Management System"]
     integrated_system = random.choice(systems)
     
-    # Simulate success/failure
-    success = random.random() < 0.9  # 90% success rate
+    # success/failure simulation
+    success = random.random() < 0.9
     
     return IntegrationResponse(
         document_id=document.id,

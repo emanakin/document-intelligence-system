@@ -24,7 +24,7 @@ app.include_router(ws.router)
 
 @app.on_event("startup")
 async def startup():
-    create_tables()
+    create_tables() # not for production
 
 @app.get("/")
 def read_root():

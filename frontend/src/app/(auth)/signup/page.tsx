@@ -131,7 +131,7 @@ export default function SignupPage() {
           </button>
 
           <p className={styles.forgotPassword}>
-            Already have an account? <Link href="/login">Login</Link>
+            <Link href="/login">Already have an account? Login</Link>
           </p>
         </form>
       </div>

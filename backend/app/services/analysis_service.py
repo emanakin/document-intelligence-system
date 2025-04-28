@@ -29,6 +29,7 @@ async def analyze_document(
         "contract":  _contract,
         "report":    _report,
     }
+    
     await step(40, "extracting core fields")
     result = extractors.get(doc_type, _generic)()
 

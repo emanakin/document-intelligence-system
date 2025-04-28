@@ -14,7 +14,6 @@ def external_integration(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    # Call service that handles external integration
     result = integrate_with_external_system(db, document_id, current_user.id)
     if not result:
         raise HTTPException(
