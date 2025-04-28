@@ -1,8 +1,7 @@
 import authService from "@/services/auth";
 import { API_BASE_URL } from "@/lib/config";
 import { apiFetch } from "@/lib/api";
-import { DocumentApiResponse } from "@/types";
-import { Document } from "@/types/document";
+import { Document, DocumentApiResponse } from "@/types/document";
 
 // Document API service
 const documentsApi = {

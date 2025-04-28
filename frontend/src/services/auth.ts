@@ -20,6 +20,7 @@ const authService = {
     return Cookies.get(TOKEN_COOKIE);
   },
   clearToken() {
+    Cookies.remove(TOKEN_COOKIE, COOKIE_OPTS);
     Cookies.remove(TOKEN_COOKIE, { path: "/" });
   },
 

@@ -1,31 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/"]; // can visit unauthenticated
 const TOKEN_COOKIE = "di_jwt";
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // public path → let pass
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p)))
-    return NextResponse.next();
-
-  // everything else requires auth
   const token = req.cookies.get(TOKEN_COOKIE)?.value;
-  if (!token) {
-    // keep the original path so we can redirect back after login
-    const login = new URL("/login", req.url);
-    login.searchParams.set("p", pathname);
-    return NextResponse.redirect(login);
+
+  if (token) {
+    console.log(`[MIDDLEWARE] Allowing access to: ${pathname}`);
+    return NextResponse.next();
   }
-  return NextResponse.next();
+
+  // Redirect unauthenticated users to login
+  const login = new URL("/login", req.url);
+  login.searchParams.set("p", pathname); // return after login
+  return NextResponse.redirect(login);
 }
 
 export const config = {
-  matcher: [
-    // protect all dashboard / document / integration pages
-    "/dashboard/:path*",
-    "/documents/:path*",
-    "/integrations/:path*",
-  ],
+  matcher: ["/dashboard/:path*", "/documents/:path*", "/integrations/:path*"],
 };

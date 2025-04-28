@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import styles from "./document-card.module.css";
+import styles from "@/styles/components/document-card.module.css";
 import { Document } from "@/types/document";
 import useAnalysisProgress from "@/hooks/useAnalysisProgress";
 import { formatDate, formatFileSize } from "@/utils/format";

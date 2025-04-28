@@ -1,9 +1,9 @@
 "use client";
 
-import "../../polyfills/promise-withResolvers";
+import "../polyfills/promise-withResolvers";
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import styles from "./pdf-viewer.module.css";
+import styles from "@/styles/components/pdf-viewer.module.css";
 
 // Set the worker source to the local file in public directory
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";

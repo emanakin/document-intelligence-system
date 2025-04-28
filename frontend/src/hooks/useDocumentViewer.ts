@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { DocumentApiResponse, DocumentData } from "@/types";
+import { DocumentApiResponse, DocumentData } from "@/types/document";
 import documentsApi from "@/services/documents";
 
 export function useDocumentViewer(docId: string) {

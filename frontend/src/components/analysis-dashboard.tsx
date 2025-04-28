@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import styles from "./analysis-dashboard.module.css";
-import { DocumentData, DocumentAnalysis } from "@/types";
+import styles from "@/styles/components/analysis-dashboard.module.css";
+import { DocumentData, DocumentAnalysis } from "@/types/document";
 
 interface AnalysisDashboardProps {
   docId: string;

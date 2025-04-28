@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import styles from "./upload-area.module.css";
+import styles from "@/styles/components/upload-area.module.css";
 
 interface UploadAreaProps {
   onFileUpload?: (file: File) => Promise<void>;

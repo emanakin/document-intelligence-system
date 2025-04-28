@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import styles from "@/styles/pages/dashboard.module.css";
-import DocumentUpload from "@/components/document-upload/upload-area";
-import DocumentCard from "@/components/document-card/document-card";
-import { useDashboard } from "./useDashboard";
+import DocumentUpload from "@/components/upload-area";
+import DocumentCard from "@/components/document-card";
+import { useDashboard } from "../../../hooks/useDashboard";
 import { useAuth } from "@/context/AuthContext";
+import UserMenu from "@/components/user-menu";
 
 export default function Dashboard() {
   /* ---------------- hook data / actions ---------------- */
@@ -21,7 +22,7 @@ export default function Dashboard() {
     setError,
   } = useDashboard();
 
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   /* ------------------ local ui state ------------------- */
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -54,15 +55,7 @@ export default function Dashboard() {
         <h1 className={styles.title}>DocIntel</h1>
         <div className={styles.userInfo}>
           <span>Welcome, {user?.full_name || user?.username}!</span>
-          <div
-            className={styles.avatar}
-            onClick={logout}
-            title="Click to logout"
-          >
-            {user?.full_name?.[0]?.toUpperCase() ||
-              user?.username?.[0]?.toUpperCase() ||
-              "U"}
-          </div>
+          <UserMenu />
         </div>
       </header>
 
